@@ -17,7 +17,6 @@ numb = ""
 
 i = 0
 while i < len(text):
-    # current_substring = text[i-k:i-k+13]
 
     if match[k] == "*" and text[i].isnumeric():
         if comma_seen:
