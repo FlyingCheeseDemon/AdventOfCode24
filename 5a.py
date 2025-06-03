@@ -16,16 +16,19 @@ for rule in rules:
     else:
         rule_dict[str(rule[1])] = [rule[0]]
 
-sum_of_middle_pages = 0
-for pages in all_pages:
-    is_valid = True
+# move this verification into it's own function for better readability
+def verify_sequence(rule_dict,pages):
     illegal_pages = []
     for i,page in enumerate(pages):
         if page in illegal_pages:
-            is_valid = False
-            break
+            return False
         if str(page) in rule_dict.keys():
             illegal_pages += rule_dict[str(page)]
+    return True
+
+sum_of_middle_pages = 0
+for pages in all_pages:
+    is_valid = verify_sequence(rule_dict,pages)
     if is_valid:
         length = len(pages)
         middle = pages[int(length/2-0.5)]
