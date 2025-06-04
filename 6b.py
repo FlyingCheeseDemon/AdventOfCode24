@@ -40,8 +40,8 @@ class guard:
             pass
 
     def check_loop(self):
-        traces = self.check_field_ahead()
-        if direction_matrix[self.direction[0]+1][self.direction[1]+1] in traces:
+        trace = self.map[self.position[0]][self.position[1]]
+        if len(set(trace)) != len(trace):
             return True
         return False
 
@@ -75,7 +75,7 @@ while True:
         break
     else:
         gisela.move()
-    
+
 loopcount = 0
 for i in range(len(map)):
     for j in range(len(map[0])):
@@ -90,6 +90,7 @@ for i in range(len(map)):
         newmap[i][j] = "#"
         dieter = guard(position,direction,newmap)
         while True:
+            loop = dieter.check_loop()
             field = dieter.check_field_ahead()
             if field == "#":
                 dieter.turn()
@@ -97,7 +98,6 @@ for i in range(len(map)):
                 break
             else:
                 dieter.move()
-                loop = dieter.check_loop()
                 if loop:
                     loopcount += 1
                     break
