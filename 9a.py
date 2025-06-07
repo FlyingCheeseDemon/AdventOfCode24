@@ -1,121 +1,51 @@
-# this one's gonna work completely differently....
-# let's represent the memory as a list, but differently
+# alright, I think we do not want to actually expand the thing in order to do this
+# that sounds like a terrible idea
+# let's try to be smart about it
+# every empty space actually just means taking stuff from the end of the file instead of the front.
 cks = 0
 
-with open('9-test.txt', 'r') as file:
+with open('9-input.txt', 'r') as file:
     for line in file:
         line = [int(n) for n in line[:-1]]
 
+# the file id we are at at the front or back
+id_front = 0
+id_back = int(len(line)/2-0.5) # every second number is a file block, so the last index is that
+inx_back = len(line)-1
+counter_back = 0
 
-class element():
-    def __init__(self,file):
-        self.file = file
-        self.prev = None
-        self.next = None
+# our memory pointers.
+max_mem_pt = sum(line[::2]) 
+mem_pt = 0
 
-class double_linked_file_list():
-    def __init__(self):
-        self.first = None
-        self.last = None
+done = False
 
-    def append(self,file):
-        lmnt = element(file)
-        if self.first == None:
-            self.first = lmnt
-            self.last = lmnt
-        else:
-            self.last.next = lmnt
-            lmnt.prev = self.last
-            self.last = lmnt
-
-    def __str__(self):
-        txt = ""
-        lnk = self.first
-        while lnk:
-            txt += str(lnk.file)
-            lnk = lnk.next
-        return txt
-    
-    def __str__(self):
-        txt = ""
-        inx = 0
-        lnk = self.first
-        while lnk:
-            while inx < lnk.file[0]:
-                txt += '.'
-                inx += 1
-            for i in range(lnk.file[1]):
-                txt += str(lnk.file[2])
-                inx += 1
-
-            lnk = lnk.next
-        return txt
-
-    
-# build the inital memory list
-# the list shows the memory in order, each element contains [start_index,length_of_data,file_id] 
-
-memory = double_linked_file_list()
-file_id = 0
-current_index = 0
-for i,value in enumerate(line):
-    if i%2 == 0:
-        new_file = [current_index,value,file_id]
-        current_index += value
-        file_id += 1
-        memory.append(new_file)
+for inx_front,value in enumerate(line): # i is the position in the input
+    # all of this is nice until we reach the point in the middle. we have to stop in time
+    if inx_front%2 == 0:
+        # read from the front
+        for t in range(value):
+            cks += id_front*mem_pt
+            mem_pt += 1
+            if mem_pt >= max_mem_pt:
+                done = True
+                break
+        id_front += 1
     else:
-        # theres whitespace to consider
-        current_index += value
+        # read from the back
+        for t in range(value):
+            cks += id_back*mem_pt
+            mem_pt += 1
+            counter_back += 1
+            if counter_back >= line[inx_back]:
+                id_back -= 1
+                counter_back = 0
+                inx_back -= 2
+            if mem_pt >= max_mem_pt:
+                done = True
+                break
 
-def compression_step(memory,file_id):
-    # find the next file to move
-    file = memory.first
-    while file.file[2] != file_id:
-        file = file.next
-
-    needed_space = file.file[1]
-
-    file_0 = memory.first
-    file_1 = memory.first.next
-    while True:
-        if file_1.file[2] == file.file[2]:
-            # we haven't found anything until we hit out own file again. nothing happens this step
-            done_stuff = False
-            break
-        blank_space = file_1.file[0]-file_0.file[0]-file_0.file[1]
-        if needed_space <= blank_space:
-            new_index = file_0.file[0]+file_0.file[1]
-            file.file[0] = new_index
-            # sort the thing again
-            # this is why we use the dll. cause with an array it's a _mess_
-            file.prev.next = file.next # this is important!!! (and it's the only reason we need the prev value at all)
-            if file.next is not None:
-                file.next.prev = file.prev
-
-            file_0.next = file
-            file.prev = file_0
-
-            file.next = file_1
-            file_1.prev = file
-            done_stuff = True
-            break
-        file_1 = file_1.next
-        file_0 = file_0.next
-
-    return memory, file_id - 1,done_stuff
-
-file_id -= 1
-print(memory)
-while file_id > 0:
-    memory,file_id,done_stuff = compression_step(memory,file_id)
-    if done_stuff:
-        print(memory)
-
-lnk = memory.first
-while lnk is not None:
-    for i in range(lnk.file[1]):
-        cks += lnk.file[2]*(i+lnk.file[0])
-    lnk = lnk.next
+    if done:
+        break
 
 print(cks)
