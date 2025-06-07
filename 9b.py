@@ -47,7 +47,8 @@ class double_linked_file_list():
         lmnt.prev = pred
 
         lmnt.next = follow
-        follow.prev = lmnt
+        if follow is not None:
+            follow.prev = lmnt
 
     def __str__(self):
         txt = ""
@@ -147,4 +148,4 @@ while lnk is not None:
         cks += lnk.file[2]*(i+lnk.file[0])
     lnk = lnk.next
 
-print(cks) # 6347435614860 not right for my input...
+print(cks)
