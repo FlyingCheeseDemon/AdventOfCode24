@@ -1,6 +1,7 @@
 #include <stdio.h>
+#include <stdbool.h>
 
-int GRID_DIM = 10;
+int GRID_DIM = 140;
 
 void floodfill_step(int start_position[],char grid[GRID_DIM][GRID_DIM],int grid_dim);
 
@@ -10,7 +11,7 @@ int evaluate_area(char grid[GRID_DIM][GRID_DIM],int grid_dim);
 
 int main() {
     FILE *fptr;
-    fptr = fopen("12-test.txt", "rt"); 
+    fptr = fopen("12-input.txt", "rt"); 
     // not sure how to get this programmatically yet
     int dim_grid = GRID_DIM;
 
@@ -60,7 +61,7 @@ int main() {
             }
         }
     }
-    printf("%d", fence);
+    printf("\nSolution:%d\n\n", fence); //865708 too low
     return 0;
 }
 
@@ -83,22 +84,84 @@ void floodfill_step(int position[],char grid[GRID_DIM][GRID_DIM],int grid_dim){
 int evaluate_area(char grid[GRID_DIM][GRID_DIM],int grid_dim){
     int area = 0;
     int perimeter = 0;
-    int directions[4][2] = {{-1,0},{0,-1},{0,1},{1,0}};
+
     for(int i = 0;i<grid_dim;i++){
         for(int j = 0;j<grid_dim;j++){
             char letter = grid[i][j];
             int test = letter & 0b00100000;
             if(test == 32 ){ //lowercalse
                 area++;
-                for(int d = 0;d<4;d++){
-                    int next_position[] = {i+directions[d][0],j+directions[d][1]};
-                    char next_char = grid[next_position[0]][next_position[1]];
-                    if(next_char != letter || next_position[0] < 0 || next_position[1] < 0 || next_position[0] >= grid_dim || next_position[1] >= grid_dim){
-                        perimeter++;
+            }
+        }
+    }
+
+    // we go through all adjacent column pairs first.
+    // treating out of bounds as 0
+    bool letter_1;
+    bool letter_2;
+    int cntr = 0;
+    
+    // rows
+    for(int i = -1;i<grid_dim;i++){
+        bool status_previous_wall = false;
+        bool previous_wall_left = false; // means letter 1 was true
+        for(int j = 0;j<grid_dim;j++){ // line
+            if (i == -1){
+                letter_1 = false;
+            } else {
+                letter_1 = grid[i][j] & 0b00100000; // lowercase yes
+            }
+            if (i == grid_dim-1){
+                letter_2 = false;
+            } else {
+                letter_2 = grid[i+1][j] & 0b00100000;
+            }
+            bool status_this_wall = (letter_1 ^ letter_2); // exactly one of the two is true
+            if (status_this_wall){
+                if (!status_previous_wall){
+                    cntr += 1;
+                }else{
+                    if(letter_1 ^ previous_wall_left){ // swapping orientation
+                        cntr += 1;
                     }
                 }
             }
+            status_previous_wall = status_this_wall;
+            previous_wall_left = letter_1;
         }
+    }
+    printf("%d, ",cntr);
+    // columns
+    for(int i = -1;i<grid_dim;i++){
+        bool status_previous_wall = false;
+        bool previous_wall_left = false; // means letter 1 was true
+        for(int j = 0;j<grid_dim;j++){ // line
+            if (i == -1){
+                letter_1 = false;
+            } else {
+                letter_1 = grid[j][i] & 0b00100000; // lowercase yes
+            }
+            if (i == grid_dim-1){
+                letter_2 = false;
+            } else {
+                char test = grid[j][i+1];
+                int test2 = grid[j][i+1] & 0b00100000;
+                letter_2 = test2;
+            }
+            bool status_this_wall = (letter_1 ^ letter_2); // exactly one of the two is true
+            if (status_this_wall){
+                if (!status_previous_wall){
+                    cntr += 1;
+                }else{
+                    if(letter_1 ^ previous_wall_left){ // swapping orientation
+                        cntr += 1;
+                    }
+                }
+            }
+            status_previous_wall = status_this_wall;
+            previous_wall_left = letter_1;
+        }
+
     }
     int test;
     for(int i = 0;i<grid_dim;i++){
@@ -110,8 +173,9 @@ int evaluate_area(char grid[GRID_DIM][GRID_DIM],int grid_dim){
             }
         }
     }
-
-    return area*perimeter;
+    printf("%d\n",cntr);
+    printf("area: %d\n",area);
+    return area*cntr;
 
 }
 
@@ -122,5 +186,5 @@ void print_grid(char grid[GRID_DIM][GRID_DIM],int dim_grid){
         }
         printf("\n");
     }
-    printf("\n");
+    // printf("\n");
 }
