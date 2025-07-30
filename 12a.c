@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int GRID_DIM = 10;
+int GRID_DIM = 140;
 
 void floodfill_step(int start_position[],char grid[GRID_DIM][GRID_DIM],int grid_dim);
 
@@ -10,7 +10,7 @@ int evaluate_area(char grid[GRID_DIM][GRID_DIM],int grid_dim);
 
 int main() {
     FILE *fptr;
-    fptr = fopen("12-test.txt", "rt"); 
+    fptr = fopen("12-input.txt", "rt"); 
     // not sure how to get this programmatically yet
     int dim_grid = GRID_DIM;
 
@@ -54,7 +54,7 @@ int main() {
             if(!lowercase){
                 int position[2] = {i,j};
                 floodfill_step(position,grid,dim_grid);
-                print_grid(grid,dim_grid);
+                // print_grid(grid,dim_grid);
                 int value = evaluate_area(grid,dim_grid);
                 fence += value;
             }
