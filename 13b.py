@@ -25,24 +25,26 @@ for machine in machines:
     A = machine[0]
     B = machine[1]
     P = machine[2]
-
+    P = [P[0]+10000000000000,P[1]+10000000000000]
     if A[0] == 0:
-        y = P[0]*1./B[0]
-        x = (P[1]-y*B[1])/A[1]
+        y = int(round(P[0]/B[0]))
+        x = int(round((P[1]-y*B[1])/A[1]))
     elif A[1] == 0:
-        y = P[1]*1./B[1]
-        x = (P[0]-y*B[0])/A[0]
+        y = int(round(P[1]/B[1]))
+        x = int(round((P[0]-y*B[0])/A[0]))
     else:
-        y = 1.*(P[0]-P[1]*A[0]/A[1])/(B[0]-B[1]*A[0]/A[1])
-        x = (P[0]-y*B[0])/A[0]
+        y = int(round((P[0]-P[1]*A[0]/A[1])/(B[0]-B[1]*A[0]/A[1])))
+        x = int(round((P[0]-y*B[0])/A[0]))
 
-    x = round(x,2) # to avoid floating point errors in the comparison below
-    y = round(y,2)
 
-    if int(x) != x or int(y) != y or x < 0 or y < 0:
-        print(x,y, "unsolvable")
+    if x < 0 or y < 0:
+        print(x,y, "unsolvable: negative")
         continue
     
+    if x*A[0] + y*B[0] != P[0] or x*A[1] + y*B[1] != P[1]:
+        print(x,y, "unsolvable: fractional")
+        continue
+
     print(x,y)
     tokens += x*cost_A + y*cost_B
 
