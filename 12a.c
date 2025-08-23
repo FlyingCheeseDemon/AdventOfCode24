@@ -6,7 +6,7 @@ void floodfill_step(int start_position[],char grid[GRID_DIM][GRID_DIM],int grid_
 
 void print_grid(char grid[GRID_DIM][GRID_DIM],int dim_grid);
 
-int evaluate_area(char grid[GRID_DIM][GRID_DIM],int grid_dim);
+int get_score_from_area(char grid[GRID_DIM][GRID_DIM],int grid_dim);
 
 int main() {
     FILE *fptr;
@@ -55,7 +55,7 @@ int main() {
                 int position[2] = {i,j};
                 floodfill_step(position,grid,dim_grid);
                 // print_grid(grid,dim_grid);
-                int value = evaluate_area(grid,dim_grid);
+                int value = get_score_from_area(grid,dim_grid);
                 fence += value;
             }
         }
@@ -80,7 +80,7 @@ void floodfill_step(int position[],char grid[GRID_DIM][GRID_DIM],int grid_dim){
 
 }
 
-int evaluate_area(char grid[GRID_DIM][GRID_DIM],int grid_dim){
+int get_score_from_area(char grid[GRID_DIM][GRID_DIM],int grid_dim){
     int area = 0;
     int perimeter = 0;
     int directions[4][2] = {{-1,0},{0,-1},{0,1},{1,0}};

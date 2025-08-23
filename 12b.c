@@ -7,7 +7,7 @@ void floodfill_step(int start_position[],char grid[GRID_DIM][GRID_DIM],int grid_
 
 void print_grid(char grid[GRID_DIM][GRID_DIM],int dim_grid);
 
-int evaluate_area(char grid[GRID_DIM][GRID_DIM],int grid_dim);
+int get_score_from_area(char grid[GRID_DIM][GRID_DIM],int grid_dim);
 
 int main() {
     FILE *fptr;
@@ -56,7 +56,7 @@ int main() {
                 int position[2] = {i,j};
                 floodfill_step(position,grid,dim_grid);
                 print_grid(grid,dim_grid);
-                int value = evaluate_area(grid,dim_grid);
+                int value = get_score_from_area(grid,dim_grid);
                 fence += value;
             }
         }
@@ -81,7 +81,7 @@ void floodfill_step(int position[],char grid[GRID_DIM][GRID_DIM],int grid_dim){
 
 }
 
-int evaluate_area(char grid[GRID_DIM][GRID_DIM],int grid_dim){
+int get_score_from_area(char grid[GRID_DIM][GRID_DIM],int grid_dim){
     int area = 0;
     int perimeter = 0;
 
@@ -102,26 +102,26 @@ int evaluate_area(char grid[GRID_DIM][GRID_DIM],int grid_dim){
     int cntr = 0;
     
     // rows
-    for(int i = -1;i<grid_dim;i++){
+    for (int i = -1; i < grid_dim; i++){
         bool status_previous_wall = false;
         bool previous_wall_left = false; // means letter 1 was true
-        for(int j = 0;j<grid_dim;j++){ // line
-            if (i == -1){
+        for (int j = 0; j < grid_dim; j++){ // line
+            if (i == -1) {
                 letter_1 = false;
             } else {
                 letter_1 = grid[i][j] & 0b00100000; // lowercase yes
             }
-            if (i == grid_dim-1){
+            if (i == grid_dim - 1) {
                 letter_2 = false;
             } else {
                 letter_2 = grid[i+1][j] & 0b00100000;
             }
-            bool status_this_wall = (letter_1 ^ letter_2); // exactly one of the two is true
-            if (status_this_wall){
-                if (!status_previous_wall){
+            bool status_this_wall = letter_1 ^ letter_2; // exactly one of the two is true
+            if (status_this_wall) {
+                if (!status_previous_wall) {
                     cntr += 1;
-                }else{
-                    if(letter_1 ^ previous_wall_left){ // swapping orientation
+                } else {
+                    if (letter_1 ^ previous_wall_left) { // swapping orientation
                         cntr += 1;
                     }
                 }
@@ -135,25 +135,24 @@ int evaluate_area(char grid[GRID_DIM][GRID_DIM],int grid_dim){
     for(int i = -1;i<grid_dim;i++){
         bool status_previous_wall = false;
         bool previous_wall_left = false; // means letter 1 was true
-        for(int j = 0;j<grid_dim;j++){ // line
+        for(int j = 0; j < grid_dim; j++){ // line
             if (i == -1){
                 letter_1 = false;
             } else {
                 letter_1 = grid[j][i] & 0b00100000; // lowercase yes
             }
-            if (i == grid_dim-1){
+            if (i == grid_dim-1) {
                 letter_2 = false;
             } else {
-                char test = grid[j][i+1];
                 int test2 = grid[j][i+1] & 0b00100000;
                 letter_2 = test2;
             }
             bool status_this_wall = (letter_1 ^ letter_2); // exactly one of the two is true
-            if (status_this_wall){
+            if (status_this_wall) {
                 if (!status_previous_wall){
                     cntr += 1;
-                }else{
-                    if(letter_1 ^ previous_wall_left){ // swapping orientation
+                } else {
+                    if (letter_1 ^ previous_wall_left){ // swapping orientation
                         cntr += 1;
                     }
                 }
