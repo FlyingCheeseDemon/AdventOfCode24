@@ -16,7 +16,7 @@
 # A 2D 5x5 list for each directional keypad
 # the first index is the start position, the second index is the end position
 # in this order: ^ A < v >
-# so from the keypad view the index is (i+3*j)-1
+# so from the keypad view the index is (3*i+j)-1
 # the first matrix is full of 1s because a person inputs it
 # we'll store the matrices in a list too to keep the robots organized
 # our testcase will be part a
